@@ -1,6 +1,7 @@
 var tmi = require("tmi.js");
 var identity = require("./auth.json");
 var phases = require("./phases.js");
+var vote = require("./vote.js");
 
 var options = {
     options: {
@@ -30,9 +31,18 @@ client.on("chat", function(channel, user, message, self) {
     var canonicalMessage = phases.canonicalize(message, phase);
     if (canonicalMessage == null) return; // ignore messages that don't match
 
-    if (typeof votes[canonicalMessage] === "undefined") {
-        votes[canonicalMessage] = 1;
-    } else {
-        votes[canonicalMessage]++;
-    }
+    vote.vote(canonicalMessage, user["display-name"]);
 });
+
+setInterval(function() {
+    winner = vote.pickWinner();
+    if (winner === null) return; // wait for more votes
+    // TODO send winner to battleship server
+    fire(winner, client);
+    vote.reset();
+}, 5000)
+
+function fire(coords, cli) {
+    // console.log("Firing at: " + coords);
+    cli.action("chattleship", "Firing at: " + coords);
+}
