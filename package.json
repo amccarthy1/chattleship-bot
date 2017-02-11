@@ -1,0 +1,14 @@
+{
+  "name": "chattleship-bot",
+  "version": "1.0.0",
+  "description": "A twitch bot for playing battleship",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adam McCarthy",
+  "license": "MIT",
+  "dependencies": {
+    "tmi.js": "^1.1.2"
+  }
+}
