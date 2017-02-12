@@ -5,8 +5,8 @@ var vote = require("./vote.js");
 var request = require("request");
 var api = require("./api.js");
 
-const VOTE_TIMEOUT = 5000;
-const DELAY_BTW_GAMES_SEC = 30;
+const VOTE_TIMEOUT = 1000;
+const DELAY_BTW_GAMES_SEC = 10;
 
 var options = {
     options: {
@@ -36,9 +36,7 @@ client.on("connected", function(address, port) {
 client.on("chat", function(channel, user, message, self) {
     if (user["user-type"] === "mod") {
         if (message === "!reset") {
-            api.reset(function (body) {
-                phase = body.phase;
-                winner = body.winner;
+            api.reset(function (result) {
                 vote.reset();
                 client.action("chattleship", "Successfully reset game.");
             });
@@ -60,22 +58,18 @@ function doVote() {
 var voteTimer = setInterval(doVote, VOTE_TIMEOUT);
 
 function fire(coords, cli) {
-    api.fire(coords, 1, function(body) {
+    api.fire(coords, 1, function(result) {
+        debugger;
         vote.reset();
-        cli.action("chattleship", body.result + " at: " + coords);
-        phase = body.phase;
-        if (body.winner) {
-            winner = body.winner;
+        cli.action("chattleship", result + " at: " + coords);
+        if (api.getState().winner) {
+            winner = api.getState().winner;
             cli.action("chattleship", "Game over! Player " + winner + " won!" +
                 "Next game starting in " + DELAY_BTW_GAMES_SEC + " seconds"
             );
             clearInterval(voteTimer);
             setTimeout(function() {
-                api.reset(function(body) {
-                    debugger;
-                    if (body.phase) {
-                        phase = body.phase;
-                    }
+                api.reset(function(result) {
                     vote.reset();
                 });
                 cli.action("chattleship", "A new game has begun! Cast votes " +
