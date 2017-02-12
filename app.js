@@ -13,8 +13,8 @@ var vote = require("./vote.js");
 var request = require("request");
 var api = require("./api.js");
 
-const VOTE_TIMEOUT = 1000;
-const DELAY_BTW_GAMES_SEC = 10;
+const VOTE_TIMEOUT = 5000;
+const DELAY_BTW_GAMES_SEC = 60;
 
 var options = {
     options: {
@@ -46,7 +46,7 @@ client.on("chat", function(channel, user, message, self) {
         if (message === "!reset") {
             api.reset(function (result) {
                 vote.reset();
-                client.say("chattleship", "Successfully reset game.");
+                client.say("chattleship", "Successfully reset game raysBeef");
             });
         }
     }
@@ -69,10 +69,11 @@ function fire(coords, cli) {
     api.fire(coords, 1, function(result) {
         debugger;
         vote.reset();
-        cli.say("chattleship", result + " at: " + coords);
+        cli.say("chattleship", result + " at: " + coords + " " + (result === "HIT" ? "raysB" : ""));
         if (api.getState().winner) {
-            winner = api.getState().winner;
-            cli.say("chattleship", "Game over! Player " + winner + " won!" +
+            var won = api.getState().winner === 1;
+            cli.say("chattleship", "Game over! " + (won ? "chat" : "AI") + " won! " +
+                (won ? "raysC " : "raysA ") +
                 "Next game starting in " + DELAY_BTW_GAMES_SEC + " seconds"
             );
             clearInterval(voteTimer);
