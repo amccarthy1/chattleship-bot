@@ -69,7 +69,7 @@ function fire(coords, cli) {
     api.fire(coords, 1, function(result) {
         debugger;
         vote.reset();
-        cli.say("chattleship", result + " at: " + coords + " " + (result === "HIT" ? "raysB" : ""));
+        cli.say("chattleship", result + " at: " + coords + " " + (result !== "MISS" ? "raysB" : ""));
         if (api.getState().winner) {
             var won = api.getState().winner === 1;
             cli.say("chattleship", "Game over! " + (won ? "chat" : "AI") + " won! " +
