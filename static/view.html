@@ -61,13 +61,16 @@ setInterval(updateVotes, 500);
 }
 #vote-table th, #vote-table td {
     height: 32px;
-    font-size: 2em;
+    font-size: 1.9em;
     font-family: 'Inconsolata', monospace;
     color: #fff;
     padding: 0;
 }
 #vote-table tbody tr:nth-child(odd) {
    background-color: #111;
+}
+#vote-table tbody tr:nth-child(even) {
+   background-color: #000;
 }
 #vote-table td {
     padding-right: 0.5em;
