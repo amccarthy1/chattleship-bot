@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vote Panel</title>
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    <script>
+// Borrowed from
+// https://mathiasbynens.be/notes/xhr-responsetype-json
+var getJSON = function(url) {
+	return new Promise(function(resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('get', url, true);
+		xhr.responseType = 'json';
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status == 200) {
+				resolve(xhr.response);
+			} else {
+				reject(status);
+			}
+		};
+		xhr.send();
+	});
+};
+function updateVotes() {
+    getJSON("/votes").then(function(data) {
+        var votes = data.votes;
+        var pairs = []
+        for (coord in votes) {
+            pairs.push({coord: coord, votes: votes[coord]});
+        }
+        pairs.sort(function(left, right) {
+            return right[1] - left[1];
+        })
+        var tbody = document.getElementById('vote-body');
+        tbody.innerHTML = "";
+        for (var i = 0; i < pairs.length; i++) {
+            var tr = document.createElement('tr');
+            var coordTd = document.createElement('td');
+            var votesTd = document.createElement('td');
+            coordTd.className = 'coords';
+            votesTd.className = 'votes';
+            coordTd.innerHTML = pairs[i].coord;
+            votesTd.innerHTML = pairs[i].votes;
+            tr.appendChild(coordTd);
+            tr.appendChild(votesTd);
+            tbody.appendChild(tr);
+        }
+    });
+}
+setInterval(updateVotes, 500);
+    </script>
+    <style>
+#vote-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#vote-table th {
+    background-color: #182133;
+}
+#vote-table th, #vote-table td {
+    height: 32px;
+    font-size: 2em;
+    font-family: 'Inconsolata', monospace;
+    color: #fff;
+    padding: 0;
+}
+#vote-table tbody tr:nth-child(odd) {
+   background-color: #111;
+}
+#vote-table td {
+    padding-right: 0.5em;
+}
+td.coords, td.votes {
+    text-align: right;
+}
+    </style>
+</head>
+<body>
+    <table id="vote-table">
+        <thead>
+            <tr>
+                <th id="coordinates">Coords</th>
+                <th id="votes">Votes</th>
+            </tr>
+        </thead>
+        <tbody id='vote-body'>
+        </tbody>
+</body>
+</html>

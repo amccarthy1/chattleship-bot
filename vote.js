@@ -5,10 +5,39 @@
  * IT IS NOT ACTIVELY MAINTAINED.
  * vote.js
  * Simple, in-memory voting system for chattleship.
+ * Exposes a web API for tracking votes.
  */
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+var port = process.env.PORT || 8081;
+var router = express.Router();
 
 var votes = {};
 var voters = new Set();
+
+router.get('/votes', function(req, res) {
+    // fudge some votes
+    var votes = {
+        "I1": 1237,
+        "F7": 422,
+        "H8": 16,
+        "J6": 15,
+        "E2": 14,
+        "B9": 2,
+        "J10": 1,
+        "E5": 1,
+        "A3": 1
+    }
+    res.json({
+        votes: votes
+    });
+});
+app.use('/', router);
+app.use('/static', express.static("./static"));
 
 function vote(choice, username) {
     if (voters.has(username)) return;
@@ -61,3 +90,5 @@ module.exports = {
     pickWinner: pickWinner,
     reset: reset
 };
+
+app.listen(port);

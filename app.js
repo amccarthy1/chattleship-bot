@@ -13,7 +13,7 @@ var vote = require("./vote.js");
 var request = require("request");
 var api = require("./api.js");
 
-const VOTE_TIMEOUT = 1000;
+const VOTE_TIMEOUT = 5000;
 const DELAY_BTW_GAMES_SEC = 10;
 
 var options = {
