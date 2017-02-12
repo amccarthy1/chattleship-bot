@@ -2,6 +2,11 @@ var tmi = require("tmi.js");
 var identity = require("./auth.json");
 var phases = require("./phases.js");
 var vote = require("./vote.js");
+var request = require("request");
+var api = require("./api.js");
+
+const VOTE_TIMEOUT = 5000;
+const DELAY_BTW_GAMES_SEC = 30;
 
 var options = {
     options: {
@@ -19,6 +24,7 @@ var phase = phases.enum.FIRING; // TODO do fleet planning via chat as well.
 var votes = {};
 
 var client = tmi.client(options)
+var api = new api("http://localhost:8080");
 client.connect();
 
 client.on("connected", function(address, port) {
@@ -28,21 +34,55 @@ client.on("connected", function(address, port) {
 
 
 client.on("chat", function(channel, user, message, self) {
+    if (user["user-type"] === "mod") {
+        if (message === "!reset") {
+            api.reset(function (body) {
+                phase = body.phase;
+                winner = body.winner;
+                vote.reset();
+                client.action("chattleship", "Successfully reset game.");
+            });
+        }
+    }
     var canonicalMessage = phases.canonicalize(message, phase);
     if (canonicalMessage == null) return; // ignore messages that don't match
 
     vote.vote(canonicalMessage, user["display-name"]);
 });
 
-setInterval(function() {
-    winner = vote.pickWinner();
-    if (winner === null) return; // wait for more votes
+function doVote() {
+    var votewin = vote.pickWinner();
+    if (votewin === null) return; // wait for more votes
     // TODO send winner to battleship server
-    fire(winner, client);
-    vote.reset();
-}, 5000)
+    fire(votewin, client);
+}
+
+var voteTimer = setInterval(doVote, VOTE_TIMEOUT);
 
 function fire(coords, cli) {
-    // console.log("Firing at: " + coords);
-    cli.action("chattleship", "Firing at: " + coords);
+    api.fire(coords, 1, function(body) {
+        vote.reset();
+        cli.action("chattleship", body.result + " at: " + coords);
+        phase = body.phase;
+        if (body.winner) {
+            winner = body.winner;
+            cli.action("chattleship", "Game over! Player " + winner + " won!" +
+                "Next game starting in " + DELAY_BTW_GAMES_SEC + " seconds"
+            );
+            clearInterval(voteTimer);
+            setTimeout(function() {
+                api.reset(function(body) {
+                    debugger;
+                    if (body.phase) {
+                        phase = body.phase;
+                    }
+                    vote.reset();
+                });
+                cli.action("chattleship", "A new game has begun! Cast votes " +
+            "for which coords to hit!");
+                voteTimer = setInterval(doVote, VOTE_TIMEOUT);
+            }, 1000 * DELAY_BTW_GAMES_SEC);
+
+        }
+    });
 }
