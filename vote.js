@@ -20,18 +20,6 @@ var votes = {};
 var voters = new Set();
 
 router.get('/votes', function(req, res) {
-    // fudge some votes
-    var votes = {
-        "I1": 1237,
-        "F7": 422,
-        "H8": 16,
-        "J6": 15,
-        "E2": 14,
-        "B9": 2,
-        "J10": 1,
-        "E5": 1,
-        "A3": 1
-    }
     res.json({
         votes: votes
     });
