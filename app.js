@@ -1,3 +1,11 @@
+/**
+ * [DISCLAIMER] * THIS IS HACKATHON-QUALITY CODE.
+ * BY READING THIS SOURCE FILE, YOU UNDERSTAND THAT THIS CODE IS NOT OF
+ * PRODUCTION QUALITY, AND WAS WRITTEN IN A 24-HOUR TIMESPAN.
+ * IT IS NOT ACTIVELY MAINTAINED.
+ * app.js
+ * Connects a chat bot to twitch and relays commands
+ */
 var tmi = require("tmi.js");
 var identity = require("./auth.json");
 var phases = require("./phases.js");
@@ -38,7 +46,7 @@ client.on("chat", function(channel, user, message, self) {
         if (message === "!reset") {
             api.reset(function (result) {
                 vote.reset();
-                client.action("chattleship", "Successfully reset game.");
+                client.say("chattleship", "Successfully reset game.");
             });
         }
     }
@@ -61,10 +69,10 @@ function fire(coords, cli) {
     api.fire(coords, 1, function(result) {
         debugger;
         vote.reset();
-        cli.action("chattleship", result + " at: " + coords);
+        cli.say("chattleship", result + " at: " + coords);
         if (api.getState().winner) {
             winner = api.getState().winner;
-            cli.action("chattleship", "Game over! Player " + winner + " won!" +
+            cli.say("chattleship", "Game over! Player " + winner + " won!" +
                 "Next game starting in " + DELAY_BTW_GAMES_SEC + " seconds"
             );
             clearInterval(voteTimer);
@@ -72,7 +80,7 @@ function fire(coords, cli) {
                 api.reset(function(result) {
                     vote.reset();
                 });
-                cli.action("chattleship", "A new game has begun! Cast votes " +
+                cli.say("chattleship", "A new game has begun! Cast votes " +
             "for which coords to hit!");
                 voteTimer = setInterval(doVote, VOTE_TIMEOUT);
             }, 1000 * DELAY_BTW_GAMES_SEC);

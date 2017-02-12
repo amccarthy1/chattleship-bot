@@ -1,3 +1,13 @@
+/**
+ * [DISCLAIMER] * THIS IS HACKATHON-QUALITY CODE.
+ * BY READING THIS SOURCE FILE, YOU UNDERSTAND THAT THIS CODE IS NOT OF
+ * PRODUCTION QUALITY, AND WAS WRITTEN IN A 24-HOUR TIMESPAN.
+ * IT IS NOT ACTIVELY MAINTAINED.
+ * api.js
+ * Abstraction of the HTTP API. Keeps track of the state of the game, in case
+ *  the chat bot needs it.
+ */
+
 const request = require("request");
 
 const resetEndpoint = "/reset";

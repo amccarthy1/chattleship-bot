@@ -1,3 +1,12 @@
+/**
+ * [DISCLAIMER] * THIS IS HACKATHON-QUALITY CODE.
+ * BY READING THIS SOURCE FILE, YOU UNDERSTAND THAT THIS CODE IS NOT OF
+ * PRODUCTION QUALITY, AND WAS WRITTEN IN A 24-HOUR TIMESPAN.
+ * IT IS NOT ACTIVELY MAINTAINED.
+ * vote.js
+ * Simple, in-memory voting system for chattleship.
+ */
+
 var votes = {};
 var voters = new Set();
 
