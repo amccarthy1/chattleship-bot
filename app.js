@@ -28,7 +28,6 @@ var options = {
     channels: ["chattleship"]
 };
 
-var phase = phases.enum.FIRING; // TODO do fleet planning via chat as well.
 var votes = {};
 
 var client = tmi.client(options)
@@ -49,6 +48,10 @@ client.on("chat", function(channel, user, message, self) {
                 client.say("chattleship", "Successfully reset game raysBeef");
             });
         }
+    }
+    var phase = phases.enum.FIRING; // by default
+    if (api.getState()) {
+        phase = api.getState().phase;
     }
     var canonicalMessage = phases.canonicalize(message, phase);
     if (canonicalMessage == null) return; // ignore messages that don't match
